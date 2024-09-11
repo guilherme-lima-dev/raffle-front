@@ -29,6 +29,8 @@ export default function RafflePage() {
     const [showModal, setShowModal] = useState<boolean>(false); // Estado para controlar a exibição da modal
     const [customerName, setCustomerName] = useState<string>(''); // Nome do comprador
     const [customerPhone, setCustomerPhone] = useState<string>(''); // Telefone do comprador
+    const [pixMessage, setPixMessage] = useState<string | null>(null);
+
 
     useEffect(() => {
         // Função para buscar os dados da rifa
@@ -93,6 +95,13 @@ export default function RafflePage() {
         return <div className="text-center">Raffle not found</div>;
     }
 
+    const handleCopyPix = () => {
+        const pixKey = '61993248349';
+        navigator.clipboard.writeText(pixKey);
+        setPixMessage('Chave PIX copiada para a área de transferência!');
+        setTimeout(() => setPixMessage(null), 3000); // Remove a mensagem após 3 segundos
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 py-10">
             <div className="container mx-auto px-4">
@@ -140,6 +149,10 @@ export default function RafflePage() {
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                             <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
                                 <h2 className="text-xl font-semibold mb-4 text-black">Confirme seu Pedido</h2>
+                                <p className="mt-6 mb-2 text-black cursor-pointer " onClick={handleCopyPix}>
+                                    Chave PIX (Telefone): <b className="underline">61993248349</b>
+                                </p>
+                                {pixMessage && <p className="text-green-500">{pixMessage}</p>}
                                 <p className="mb-2 text-black">Números selecionados: {selectedNumbers.join(', ')}</p>
                                 <input
                                     type="text"
