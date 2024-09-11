@@ -30,7 +30,7 @@ export default function RafflePage() {
     const [customerName, setCustomerName] = useState<string>(''); // Nome do comprador
     const [customerPhone, setCustomerPhone] = useState<string>(''); // Telefone do comprador
     const [pixMessage, setPixMessage] = useState<string | null>(null);
-
+    const [isScrolled, setIsScrolled] = useState<boolean>(false); // Estado para verificar se a página foi rolada
 
     useEffect(() => {
         // Função para buscar os dados da rifa
@@ -47,6 +47,19 @@ export default function RafflePage() {
         };
 
         fetchRaffle();
+    }, []);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 300) { // Ajuste o valor conforme necessário
+                setIsScrolled(true); // Quando o usuário rolar mais de 300px, o botão se torna flutuante
+            } else {
+                setIsScrolled(false); // Quando a rolagem volta ao topo, o botão retorna à posição original
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     // Função para selecionar ou desselecionar números
@@ -118,25 +131,26 @@ export default function RafflePage() {
 
                     {/* Exibe os números selecionados */}
                     <div className="mt-6 mb-6">
-                        <p className="text-gray-800 font-semibold">Números
-                            selecionados: {selectedNumbers.join(', ') || 'Nenhum'}</p>
+                        <p className="text-gray-800 font-semibold">Números selecionados: {selectedNumbers.join(', ') || 'Nenhum'}</p>
                     </div>
 
                     {/* Botão de comprar */}
-                    <div className="mb-6 text-center">
-                        <button
-                            onClick={() => setShowModal(true)} // Exibe a modal ao clicar no botão
-                            disabled={selectedNumbers.length === 0} // Desabilita o botão se não houver números selecionados
-                            className={`px-4 py-2 rounded-lg text-white font-semibold transition duration-200
-                                ${selectedNumbers.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}
-                            `}
-                        >
-                            Comprar
-                        </button>
+                    <div className="row-auto flex items-center justify-center">
+                        <div className={`${isScrolled ? 'fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full w-96 max-w-md px-4' : 'w-96 text-center my-6 max-w-md px-4'}`}>
+                            <button
+                                onClick={() => setShowModal(true)} // Exibe a modal ao clicar no botão
+                                disabled={selectedNumbers.length === 0} // Desabilita o botão se não houver números selecionados
+                                className={`w-full py-4 rounded-full text-white font-semibold transition duration-200 shadow-lg
+                        ${selectedNumbers.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}
+                    `}
+                            >
+                                Comprar
+                            </button>
+                        </div>
                     </div>
 
                     {/* Grid de Números */}
-                    <div className="grid grid-cols-5 gap-4">
+                    <div className="grid grid-cols-5 gap-4 mb-32">
                         {raffle.numbers.map((num) => (
                             <div
                                 key={num.external_id}
@@ -193,6 +207,8 @@ export default function RafflePage() {
                     )}
                 </div>
             </div>
+
+
         </div>
     );
 }
