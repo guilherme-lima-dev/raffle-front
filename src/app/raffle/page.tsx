@@ -101,6 +101,7 @@ export default function RafflePage() {
                     <p className="text-gray-600 mb-2">{raffle.description}</p>
                     <p className="text-gray-800 font-semibold mb-4">Preço por número: R$ {raffle.price}</p>
                     <p className="text-gray-800 font-semibold mb-4">Quantidade de números: {raffle.total_numbers}</p>
+                    <p className="text-gray-800 font-semibold mb-4">Premiação: R$ 500</p>
                     {/* Exibe os números selecionados */}
                     <div className="mt-6 mb-6">
                         <p className="text-gray-800 font-semibold">Números selecionados: {selectedNumbers.join(', ') || 'Nenhum'}</p>
