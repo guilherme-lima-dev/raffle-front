@@ -111,9 +111,15 @@ export default function RafflePage() {
                     <p className="text-gray-800 font-semibold mb-4">Preço por número: R$ {raffle.price}</p>
                     <p className="text-gray-800 font-semibold mb-4">Quantidade de números: {raffle.total_numbers}</p>
                     <p className="text-gray-800 font-semibold mb-4">Premiação: R$ 500</p>
+                    <p className="mt-4 mb-2 text-black cursor-pointer " onClick={handleCopyPix}>
+                        Chave PIX (Telefone): <b className="underline">61993248349</b>
+                    </p>
+                    {pixMessage && <p className="text-green-500">{pixMessage}</p>}
+
                     {/* Exibe os números selecionados */}
                     <div className="mt-6 mb-6">
-                        <p className="text-gray-800 font-semibold">Números selecionados: {selectedNumbers.join(', ') || 'Nenhum'}</p>
+                        <p className="text-gray-800 font-semibold">Números
+                            selecionados: {selectedNumbers.join(', ') || 'Nenhum'}</p>
                     </div>
 
                     {/* Botão de comprar */}
