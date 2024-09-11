@@ -93,8 +93,8 @@ export default function OrderApprovalPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-            <h1 className="text-2xl font-bold mb-6 text-black">Aprovar ou Rejeitar Pedidos</h1>
+        <div className="min-h-screen bg-gray-100 p-4">
+            <h1 className="text-2xl font-bold mb-6 text-center text-black">Aprovar ou Rejeitar Pedidos</h1>
 
             {/* Filtro por nome do cliente */}
             <input
@@ -102,68 +102,53 @@ export default function OrderApprovalPage() {
                 placeholder="Filtrar por nome do cliente"
                 value={filter}
                 onChange={handleFilterChange}
-                className="px-4 py-2 border rounded-md mb-4 text-black"
+                className="block w-full max-w-lg mx-auto mb-6 px-4 py-2 border rounded-md text-black"
             />
 
             {/* Contador de pedidos no topo */}
-            <p className="mb-4 text-black">Total de Pedidos: {filteredOrders.length}</p>
+            <p className="mb-4 text-center text-black">Total de Pedidos: {filteredOrders.length}</p>
 
-            <div className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-md">
-                <h2 className="text-lg font-semibold text-black mb-4">Lista de Pedidos</h2>
-
-                <table className="min-w-full table-auto text-left text-black">
-                    <thead>
-                    <tr>
-                        <th className="px-4 py-2">ID</th>
-                        <th className="px-4 py-2">Cliente</th>
-                        <th className="px-4 py-2">Status</th>
-                        <th className="px-4 py-2">Ações</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {filteredOrders.map((order) => (
-                        <tr key={order.id} className="border-b">
-                            <td className="px-4 py-2">{order.id}</td>
-                            <td className="px-4 py-2">{order.customer_name}</td>
-                            <td className="px-4 py-2">{order.status}</td>
-                            <td className="px-4 py-2">
-                                <div className="flex space-x-2">
-                                    <button
-                                        onClick={() => handleApprove(order.id)}
-                                        className={`px-4 py-2 text-white rounded-lg ${
-                                            order.status === 'approved'
-                                                ? 'bg-gray-400 cursor-not-allowed'
-                                                : 'bg-green-500 hover:bg-green-600'
-                                        }`}
-                                        disabled={order.status === 'approved'}
-                                    >
-                                        Aprovar
-                                    </button>
-                                    <button
-                                        onClick={() => handleReject(order.id)}
-                                        className={`px-4 py-2 text-white rounded-lg ${
-                                            order.status === 'rejected'
-                                                ? 'bg-gray-400 cursor-not-allowed'
-                                                : 'bg-red-500 hover:bg-red-600'
-                                        }`}
-                                        disabled={order.status === 'rejected'}
-                                    >
-                                        Rejeitar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-
-                {/* Exibir mensagem de sucesso ou erro */}
-                {message && <p className="text-green-500 mt-4">{message}</p>}
-                {error && <p className="text-red-500 mt-4">{error}</p>}
+            {/* Lista de pedidos em formato de cards */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {filteredOrders.map((order) => (
+                    <div key={order.id} className="bg-white p-4 rounded-lg shadow-md">
+                        <h3 className="text-xl font-semibold mb-2 text-black">Pedido #{order.id}</h3>
+                        <p className="text-gray-700 mb-2"><strong>Cliente:</strong> {order.customer_name}</p>
+                        <p className="text-gray-700 mb-4"><strong>Status:</strong> {order.status}</p>
+                        <div className="flex justify-between">
+                            <button
+                                onClick={() => handleApprove(order.id)}
+                                className={`w-full mr-2 py-2 rounded-lg text-white ${
+                                    order.status === 'approved'
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-green-500 hover:bg-green-600'
+                                }`}
+                                disabled={order.status === 'approved'}
+                            >
+                                Aprovar
+                            </button>
+                            <button
+                                onClick={() => handleReject(order.id)}
+                                className={`w-full py-2 rounded-lg text-white ${
+                                    order.status === 'rejected'
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-red-500 hover:bg-red-600'
+                                }`}
+                                disabled={order.status === 'rejected'}
+                            >
+                                Rejeitar
+                            </button>
+                        </div>
+                    </div>
+                ))}
             </div>
 
+            {/* Exibir mensagem de sucesso ou erro */}
+            {message && <p className="text-green-500 mt-6 text-center">{message}</p>}
+            {error && <p className="text-red-500 mt-6 text-center">{error}</p>}
+
             {/* Contador de pedidos no final */}
-            <p className="mt-4 text-black">Total de Pedidos: {filteredOrders.length}</p>
+            <p className="mt-6 text-center text-black">Total de Pedidos: {filteredOrders.length}</p>
         </div>
     );
 }
