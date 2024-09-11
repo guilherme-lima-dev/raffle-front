@@ -10,7 +10,7 @@ export default function OrderApprovalPage() {
 
     const handleApprove = async () => {
         try {
-            const response = await axios.get(`http://ec2-44-201-203-12.compute-1.amazonaws.com/orders/${orderId}/approve`, {
+            await axios.get(`http://ec2-44-201-203-12.compute-1.amazonaws.com/orders/${orderId}/approve`, {
                 headers: {
                     accept: 'application/json',
                 },
@@ -25,7 +25,7 @@ export default function OrderApprovalPage() {
 
     const handleReject = async () => {
         try {
-            const response = await axios.get(`http://ec2-44-201-203-12.compute-1.amazonaws.com/orders/${orderId}/reject`, {
+            await axios.get(`http://ec2-44-201-203-12.compute-1.amazonaws.com/orders/${orderId}/reject`, {
                 headers: {
                     accept: 'application/json',
                 },

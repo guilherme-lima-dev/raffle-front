@@ -29,7 +29,6 @@ export default function RafflePage() {
     const [showModal, setShowModal] = useState<boolean>(false); // Estado para controlar a exibição da modal
     const [customerName, setCustomerName] = useState<string>(''); // Nome do comprador
     const [customerPhone, setCustomerPhone] = useState<string>(''); // Telefone do comprador
-    const [orderId, setOrderId] = useState<string | null>(null); // ID da ordem criada
 
     useEffect(() => {
         // Função para buscar os dados da rifa
@@ -67,7 +66,6 @@ export default function RafflePage() {
                 raffle_eid: raffle?.external_id,
             });
 
-            setOrderId(response.data.id); // Pega o ID da ordem retornada pelo backend
             setShowModal(false); // Fecha a modal após a criação da ordem
             sendWhatsAppMessage(response.data.id); // Envia a mensagem no WhatsApp com o ID da ordem
         } catch (error) {
