@@ -34,7 +34,7 @@ export default function RafflePage() {
         // Função para buscar os dados da rifa
         const fetchRaffle = async () => {
             try {
-                const response = await axios.get<Raffle>('/api/raffles/acff1926-703a-11ef-adb4-028b968b3f3d');
+                const response = await axios.get<Raffle>('http://ec2-44-201-203-12.compute-1.amazonaws.com/raffles/acff1926-703a-11ef-adb4-028b968b3f3d');
                 setRaffle(response.data);
                 setLoading(false);
             } catch (err) {
@@ -59,7 +59,7 @@ export default function RafflePage() {
     // Função para enviar a requisição de criação da ordem
     const handleConfirmOrder = async () => {
         try {
-            const response = await axios.post('/api/orders', {
+            const response = await axios.post('http://ec2-44-201-203-12.compute-1.amazonaws.com/orders', {
                 customer_name: customerName,
                 customer_phone: customerPhone || 'NULL',
                 numbers: selectedNumbers,
