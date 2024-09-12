@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Link from "next/link";
 
 // Interface para tipagem dos dados da rifa
 interface RaffleNumber {
@@ -141,7 +142,7 @@ export default function RafflePage() {
         <div className="min-h-screen bg-blue-50 py-10">
             <div className="container mx-auto px-4">
                 <div className="bg-white shadow-lg rounded-lg p-8">
-                    <h1 className="text-4xl font-bold text-blue-800 mb-4">{raffle?.name}</h1>
+                    <h1 className="text-4xl font-bold text-blue-800 mb-4">{raffle?.name} (<Link href="/ranking">Ranking de compradores</Link>)</h1>
                     <p className="text-gray-600 mb-2">{raffle?.description}</p>
                     <p className="text-blue-800 font-semibold mb-4">Preço por número: R$ {raffle?.price}</p>
                     <p className="text-blue-800 font-semibold mb-4">Quantidade de números: {raffle?.total_numbers}</p>
