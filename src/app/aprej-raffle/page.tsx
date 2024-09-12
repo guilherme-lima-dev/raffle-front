@@ -61,7 +61,7 @@ export default function OrderApprovalPage() {
             // Atualiza o status do pedido na lista
             setFilteredOrders((prevOrders) =>
                 prevOrders.map((order) =>
-                    order.id === orderId ? { ...order, status: 'approved' } : order
+                    order.id === orderId ? { ...order, status: 'paid' } : order
                 )
             );
         } catch (err) {
@@ -119,7 +119,7 @@ export default function OrderApprovalPage() {
                             <button
                                 onClick={() => handleApprove(order.id)}
                                 className={`w-full mr-2 py-2 rounded-lg text-white ${
-                                    order.status === 'approved'
+                                    order.status === 'paid'
                                         ? 'bg-gray-400 cursor-not-allowed'
                                         : 'bg-green-500 hover:bg-green-600'
                                 }`}
