@@ -34,6 +34,7 @@ export default function RafflePage() {
     const [isScrolled, setIsScrolled] = useState<boolean>(false);
     const [orderId, setOrderId] = useState<string | null>(null);
     const [randomSelectionCount, setRandomSelectionCount] = useState<number>(0);
+    const [availableSlots, setAvailableSlots] = useState<number>(0); // Armazena a quantidade de cotas disponíveis
 
     useEffect(() => {
         const fetchRaffle = async () => {
@@ -41,6 +42,11 @@ export default function RafflePage() {
                 const response = await axios.get<Raffle>('https://raffle.popingressos.com.br/raffles/acff1926-703a-11ef-adb4-028b968b3f3d');
                 setRaffle(response.data);
                 setLoading(false);
+
+                // Calcula as cotas disponíveis (status === "available")
+                const available = response.data.numbers.filter(num => num.status === 'available').length;
+                setAvailableSlots(available);
+
             } catch (err) {
                 setError('Failed to load raffle data');
                 setLoading(false);
@@ -140,13 +146,17 @@ export default function RafflePage() {
                     <p className="text-blue-800 font-semibold mb-4">Preço por número: R$ {raffle?.price}</p>
                     <p className="text-blue-800 font-semibold mb-4">Quantidade de números: {raffle?.total_numbers}</p>
                     <p className="text-blue-800 font-semibold mb-4">Premiação: R$ 500</p>
+
+                    {/* Mostra a quantidade de cotas disponíveis */}
+                    <p className="text-blue-800 font-semibold mb-4">Números disponíveis: {availableSlots}</p>
+
                     <p className="mt-4 mb-2 text-black cursor-pointer" onClick={handleCopyPix}>
                         Chave PIX (Telefone): <b className="underline">61993248349</b>
                     </p>
                     {pixMessage && <p className="text-green-500">{pixMessage}</p>}
 
                     <div className="my-4">
-                        <label className="block text-blue-800 font-semibold mb-2">Seleção Aleatória:</label>
+                        <label className="block text-blue-800 font-semibold mb-2">Seleção Aleatória (Digite a quantidade de numeros):</label>
                         <input
                             type="number"
                             placeholder="Quantidade de números"
@@ -156,7 +166,7 @@ export default function RafflePage() {
                         />
                         <button
                             onClick={handleRandomSelection}
-                            disabled={randomSelectionCount <= 0 || randomSelectionCount > (raffle?.numbers.length ?? 0)}
+                            disabled={randomSelectionCount <= 0 || randomSelectionCount > availableSlots}
                             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                         >
                             Selecionar Números Aleatórios
