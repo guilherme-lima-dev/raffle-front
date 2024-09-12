@@ -26,11 +26,13 @@ export default function RafflePage() {
     const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]); // Estado para armazenar os números selecionados
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [showModal, setShowModal] = useState<boolean>(false); // Estado para controlar a exibição da modal
+    const [showModal, setShowModal] = useState<boolean>(false); // Estado para controlar a exibição da modal de confirmação de pedido
+    const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false); // Nova modal de sucesso
     const [customerName, setCustomerName] = useState<string>(''); // Nome do comprador
     const [customerPhone, setCustomerPhone] = useState<string>(''); // Telefone do comprador
     const [pixMessage, setPixMessage] = useState<string | null>(null);
     const [isScrolled, setIsScrolled] = useState<boolean>(false); // Estado para verificar se a página foi rolada
+    const [orderId, setOrderId] = useState<string | null>(null); // Armazena o ID da ordem para o redirecionamento
 
     useEffect(() => {
         // Função para buscar os dados da rifa
@@ -51,10 +53,10 @@ export default function RafflePage() {
 
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 300) { // Ajuste o valor conforme necessário
-                setIsScrolled(true); // Quando o usuário rolar mais de 300px, o botão se torna flutuante
+            if (window.scrollY > 300) {
+                setIsScrolled(true);
             } else {
-                setIsScrolled(false); // Quando a rolagem volta ao topo, o botão retorna à posição original
+                setIsScrolled(false);
             }
         };
 
@@ -81,8 +83,9 @@ export default function RafflePage() {
                 raffle_eid: raffle?.external_id,
             });
 
-            setShowModal(false); // Fecha a modal após a criação da ordem
-            sendWhatsAppMessage(response.data.id); // Envia a mensagem no WhatsApp com o ID da ordem
+            setOrderId(response.data.id); // Armazena o ID da ordem para usar no redirecionamento
+            setShowModal(false); // Fecha a modal de pedido
+            setShowSuccessModal(true); // Exibe a nova modal de confirmação
         } catch (error) {
             console.error('Erro ao criar a ordem', error);
         }
@@ -94,6 +97,14 @@ export default function RafflePage() {
         const message = `Oii Lari, gostaria de comprar os números: ${selectedNumbers.join(', ')} da rifa ${raffle?.name}. Meu número de pedido é ${orderId}.`;
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
+    };
+
+    // Função para fechar a modal de sucesso e redirecionar para o WhatsApp
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
+        if (orderId) {
+            sendWhatsAppMessage(orderId);
+        }
     };
 
     if (loading) {
@@ -124,7 +135,7 @@ export default function RafflePage() {
                     <p className="text-gray-800 font-semibold mb-4">Preço por número: R$ {raffle.price}</p>
                     <p className="text-gray-800 font-semibold mb-4">Quantidade de números: {raffle.total_numbers}</p>
                     <p className="text-gray-800 font-semibold mb-4">Premiação: R$ 500</p>
-                    <p className="mt-4 mb-2 text-black cursor-pointer " onClick={handleCopyPix}>
+                    <p className="mt-4 mb-2 text-black cursor-pointer" onClick={handleCopyPix}>
                         Chave PIX (Telefone): <b className="underline">61993248349</b>
                     </p>
                     {pixMessage && <p className="text-green-500">{pixMessage}</p>}
@@ -141,8 +152,8 @@ export default function RafflePage() {
                                 onClick={() => setShowModal(true)} // Exibe a modal ao clicar no botão
                                 disabled={selectedNumbers.length === 0} // Desabilita o botão se não houver números selecionados
                                 className={`w-full py-4 rounded-full text-white font-semibold transition duration-200 shadow-lg
-                        ${selectedNumbers.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}
-                    `}
+                                    ${selectedNumbers.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}
+                                `}
                             >
                                 Comprar
                             </button>
@@ -169,7 +180,7 @@ export default function RafflePage() {
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                             <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
                                 <h2 className="text-xl font-semibold mb-4 text-black">Confirme seu Pedido</h2>
-                                <p className="mt-6 mb-2 text-black cursor-pointer " onClick={handleCopyPix}>
+                                <p className="mt-6 mb-2 text-black cursor-pointer" onClick={handleCopyPix}>
                                     Chave PIX (Telefone): <b className="underline">61993248349</b>
                                 </p>
                                 {pixMessage && <p className="text-green-500">{pixMessage}</p>}
@@ -205,10 +216,29 @@ export default function RafflePage() {
                             </div>
                         </div>
                     )}
+
+                    {/* Modal de sucesso com o ícone de festa 🎉 */}
+                    {showSuccessModal && (
+                        <div
+                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+                            onClick={handleCloseSuccessModal} // Fecha a modal ao clicar fora
+                        >
+                            <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+                                <h2 className="text-2xl font-semibold text-green-500 mb-4">Pedido Confirmado!</h2>
+                                <div className="text-6xl mb-4">🎉</div>
+                                <p className="text-gray-800 font-semibold">Seu pedido foi registrado com sucesso!</p>
+                                <p className="text-gray-600 mb-6">Agora, envie o comprovante para confirmar sua compra.</p>
+                                <button
+                                    onClick={handleCloseSuccessModal} // Fecha a modal de sucesso e redireciona para WhatsApp
+                                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                >
+                                    Fechar
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
-
-
         </div>
     );
 }
