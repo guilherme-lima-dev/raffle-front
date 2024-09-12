@@ -47,7 +47,7 @@ export default function RafflePage() {
             }
         };
 
-        fetchRaffle();
+        fetchRaffle().then(r => r);
     }, []);
 
     useEffect(() => {
@@ -118,7 +118,7 @@ export default function RafflePage() {
 
     const handleCopyPix = () => {
         const pixKey = '61993248349';
-        navigator.clipboard.writeText(pixKey);
+        navigator.clipboard.writeText(pixKey).then(r => r);
         setPixMessage('Chave PIX copiada para a área de transferência!');
         setTimeout(() => setPixMessage(null), 3000);
     };
@@ -168,7 +168,7 @@ export default function RafflePage() {
                     </div>
 
                     <div className="row-auto flex items-center justify-center">
-                        <div className={`${isScrolled ? 'fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full w-96 max-w-md px-4' : 'w-96 text-center my-6 max-w-md px-4'}`}>
+                        <div className={`${isScrolled ? 'fixed bottom-4 left-1/2 transform -translate-x-1/2 w-96 max-w-md px-4' : 'w-96 text-center my-6 max-w-md px-4'}`}>
                             <button
                                 onClick={() => setShowModal(true)}
                                 disabled={selectedNumbers.length === 0}
