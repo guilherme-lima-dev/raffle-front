@@ -156,7 +156,7 @@ export default function RafflePage() {
                         />
                         <button
                             onClick={handleRandomSelection}
-                            disabled={randomSelectionCount <= 0 || randomSelectionCount > raffle?.numbers.length}
+                            disabled={randomSelectionCount <= 0 || randomSelectionCount > (raffle?.numbers.length ?? 0)}
                             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                         >
                             Selecionar Números Aleatórios
@@ -227,7 +227,7 @@ export default function RafflePage() {
                                     </button>
                                     <button
                                         onClick={handleConfirmOrder}
-                                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
                                     >
                                         Confirmar
                                     </button>
