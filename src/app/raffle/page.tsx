@@ -33,6 +33,7 @@ export default function RafflePage() {
     const [pixMessage, setPixMessage] = useState<string | null>(null);
     const [isScrolled, setIsScrolled] = useState<boolean>(false); // Estado para verificar se a página foi rolada
     const [orderId, setOrderId] = useState<string | null>(null); // Armazena o ID da ordem para o redirecionamento
+    const [randomSelectionCount, setRandomSelectionCount] = useState<number>(0); // Armazena a quantidade de números que o usuário deseja selecionar aleatoriamente
 
     useEffect(() => {
         // Função para buscar os dados da rifa
@@ -71,6 +72,21 @@ export default function RafflePage() {
         } else {
             setSelectedNumbers([...selectedNumbers, number]);
         }
+    };
+
+    // Função para selecionar números aleatórios
+    const handleRandomSelection = () => {
+        if (!raffle) return;
+        const availableNumbers = raffle.numbers.filter(num => num.status === 'available');
+        const selected = [];
+
+        while (selected.length < randomSelectionCount && availableNumbers.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+            const selectedNumber = availableNumbers.splice(randomIndex, 1)[0];
+            selected.push(selectedNumber.number);
+        }
+
+        setSelectedNumbers(selected);
     };
 
     // Função para enviar a requisição de criação da ordem
@@ -139,6 +155,25 @@ export default function RafflePage() {
                         Chave PIX (Telefone): <b className="underline">61993248349</b>
                     </p>
                     {pixMessage && <p className="text-green-500">{pixMessage}</p>}
+
+                    {/* Input para definir a quantidade de números a selecionar aleatoriamente */}
+                    <div className="my-4">
+                        <label className="block text-gray-800 font-semibold mb-2">Seleção Aleatória (Digite a quantidade de números):</label>
+                        <input
+                            type="number"
+                            placeholder="Quantidade de números"
+                            value={randomSelectionCount}
+                            onChange={(e) => setRandomSelectionCount(Number(e.target.value))}
+                            className="w-full px-3 py-2 mb-4 border rounded-md text-black max-w-sm"
+                        />
+                        <button
+                            onClick={handleRandomSelection}
+                            disabled={randomSelectionCount <= 0 || randomSelectionCount > raffle.numbers.length}
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                        >
+                            Selecionar Números Aleatórios
+                        </button>
+                    </div>
 
                     {/* Exibe os números selecionados */}
                     <div className="mt-6 mb-6">
