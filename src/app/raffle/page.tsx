@@ -36,6 +36,7 @@ export default function RafflePage() {
     const [orderId, setOrderId] = useState<string | null>(null);
     const [randomSelectionCount, setRandomSelectionCount] = useState<number>(0);
     const [availableSlots, setAvailableSlots] = useState<number>(0); // Armazena a quantidade de cotas disponíveis
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Estado de carregamento do botão de comprar
 
     useEffect(() => {
         const fetchRaffle = async () => {
@@ -49,12 +50,12 @@ export default function RafflePage() {
                 setAvailableSlots(available);
 
             } catch (err) {
-                setError('Failed to load raffle data');
+                setError('Falha ao carregar os dados da rifa');
                 setLoading(false);
             }
         };
 
-        fetchRaffle().then(r => r);
+        fetchRaffle();
     }, []);
 
     useEffect(() => {
@@ -93,6 +94,7 @@ export default function RafflePage() {
     };
 
     const handleConfirmOrder = async () => {
+        setIsSubmitting(true);
         try {
             const response = await axios.post('https://raffle.popingressos.com.br/orders', {
                 customer_name: customerName,
@@ -106,6 +108,8 @@ export default function RafflePage() {
             setShowSuccessModal(true);
         } catch (error) {
             console.error('Erro ao criar a ordem', error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -125,9 +129,10 @@ export default function RafflePage() {
 
     const handleCopyPix = () => {
         const pixKey = '61993248349';
-        navigator.clipboard.writeText(pixKey).then(r => r);
-        setPixMessage('Chave PIX copiada para a área de transferência!');
-        setTimeout(() => setPixMessage(null), 3000);
+        navigator.clipboard.writeText(pixKey).then(() => {
+            setPixMessage('Chave PIX copiada para a área de transferência!');
+            setTimeout(() => setPixMessage(null), 3000);
+        });
     };
 
     if (loading) {
@@ -182,12 +187,19 @@ export default function RafflePage() {
                         <div className={`${isScrolled ? 'fixed bottom-4 left-1/2 transform -translate-x-1/2 w-96 max-w-md px-4' : 'w-96 text-center my-6 max-w-md px-4'}`}>
                             <button
                                 onClick={() => setShowModal(true)}
-                                disabled={selectedNumbers.length === 0}
+                                disabled={selectedNumbers.length === 0 || isSubmitting}
                                 className={`w-full py-4 rounded-full text-white font-semibold transition duration-200 shadow-lg
-                                    ${selectedNumbers.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}
+                                    ${selectedNumbers.length === 0 || isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}
                                 `}
                             >
-                                Comprar
+                                {isSubmitting ? (
+                                    <svg className="animate-spin h-5 w-5 mx-auto text-white" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                ) : (
+                                    'Comprar'
+                                )}
                             </button>
                         </div>
                     </div>
@@ -197,7 +209,7 @@ export default function RafflePage() {
                             <div
                                 key={num.external_id}
                                 className={`flex items-center justify-center w-12 h-12 rounded-full cursor-pointer
-                                    ${num.status === 'available' ? (selectedNumbers.includes(num.number) ? 'bg-blue-500 text-white' : 'bg-blue-200 hover:bg-blue-300') : 'bg-gray-400 cursor-not-allowed'}
+                                    ${num.status === 'available' ? (selectedNumbers.includes(num.number) ? 'bg-green-500 text-white' : 'bg-green-200 hover:bg-green-300') : 'bg-gray-400 cursor-not-allowed'}
                                 `}
                                 onClick={() => num.status === 'available' && handleSelectNumber(num.number)}
                             >
@@ -239,8 +251,16 @@ export default function RafflePage() {
                                     <button
                                         onClick={handleConfirmOrder}
                                         className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                        disabled={isSubmitting}
                                     >
-                                        Confirmar
+                                        {isSubmitting ? (
+                                            <svg className="animate-spin h-5 w-5 mx-auto text-white" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                            </svg>
+                                        ) : (
+                                            'Confirmar'
+                                        )}
                                     </button>
                                 </div>
                             </div>

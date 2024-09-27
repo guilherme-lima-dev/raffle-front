@@ -13,8 +13,13 @@ interface Order {
     numbers_count: number;
 }
 
+interface AggregatedOrder {
+    customer_name: string;
+    total_numbers_count: number;
+}
+
 export default function RankingPage() {
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [orders, setOrders] = useState<AggregatedOrder[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -26,8 +31,22 @@ export default function RankingPage() {
                         accept: 'application/json',
                     },
                 });
-                // Ordena as ordens com base no numbers_count em ordem decrescente
-                const sortedOrders = response.data.sort((a, b) => b.numbers_count - a.numbers_count);
+
+                // Agrupa ordens com o mesmo nome de cliente e soma os números comprados
+                const aggregatedOrders = response.data.reduce((acc: AggregatedOrder[], order: Order) => {
+                    const existingOrder = acc.find((item) => item.customer_name === order.customer_name);
+
+                    if (existingOrder) {
+                        existingOrder.total_numbers_count += order.numbers_count;
+                    } else {
+                        acc.push({ customer_name: order.customer_name, total_numbers_count: order.numbers_count });
+                    }
+
+                    return acc;
+                }, []);
+
+                // Ordena os pedidos agregados com base no total_numbers_count em ordem decrescente
+                const sortedOrders = aggregatedOrders.sort((a, b) => b.total_numbers_count - a.total_numbers_count);
                 setOrders(sortedOrders);
                 setLoading(false);
             } catch (err) {
@@ -63,12 +82,12 @@ export default function RankingPage() {
                         </thead>
                         <tbody>
                         {orders.map((order, index) => (
-                            <tr key={order.external_id} className="border-b">
+                            <tr key={index} className="border-b">
                                 <td className="px-4 py-2 text-black">
                                     {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
                                 </td>
                                 <td className="px-4 py-2 text-black">{order.customer_name}</td>
-                                <td className="px-4 py-2 text-black">{order.numbers_count}</td>
+                                <td className="px-4 py-2 text-black">{order.total_numbers_count}</td>
                             </tr>
                         ))}
                         </tbody>

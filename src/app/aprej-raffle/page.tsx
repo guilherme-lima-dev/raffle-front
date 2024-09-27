@@ -9,6 +9,7 @@ interface Order {
     customer_name: string;
     status: string;
     external_id: string;
+    numbers: number[]; // Adicione a lista de números selecionados
 }
 
 export default function OrderApprovalPage() {
@@ -17,6 +18,7 @@ export default function OrderApprovalPage() {
     const [filter, setFilter] = useState<string>('');
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<number | null>(null); // Para rastrear o botão que está carregando
 
     useEffect(() => {
         // Carrega todos os pedidos ao montar o componente
@@ -49,13 +51,14 @@ export default function OrderApprovalPage() {
     };
 
     const handleApprove = async (orderId: number) => {
+        setLoading(orderId); // Marca o botão como "carregando"
         try {
             await axios.get(`https://raffle.popingressos.com.br/orders/${orderId}/approve`, {
                 headers: {
                     accept: 'application/json',
                 },
             });
-            setMessage(`Order ${orderId} approved successfully!`);
+            setMessage(`Pedido ${orderId} aprovado com sucesso!`);
             setError(null);
 
             // Atualiza o status do pedido na lista
@@ -65,19 +68,22 @@ export default function OrderApprovalPage() {
                 )
             );
         } catch (err) {
-            setError(`Failed to approve order ${orderId}.`);
+            setError(`Erro ao aprovar o pedido ${orderId}.`);
             setMessage(null);
+        } finally {
+            setLoading(null); // Para de mostrar o loading
         }
     };
 
     const handleReject = async (orderId: number) => {
+        setLoading(orderId); // Marca o botão como "carregando"
         try {
             await axios.get(`https://raffle.popingressos.com.br/orders/${orderId}/reject`, {
                 headers: {
                     accept: 'application/json',
                 },
             });
-            setMessage(`Order ${orderId} rejected successfully!`);
+            setMessage(`Pedido ${orderId} rejeitado com sucesso!`);
             setError(null);
 
             // Atualiza o status do pedido na lista
@@ -87,8 +93,10 @@ export default function OrderApprovalPage() {
                 )
             );
         } catch (err) {
-            setError(`Failed to reject order ${orderId}.`);
+            setError(`Erro ao rejeitar o pedido ${orderId}.`);
             setMessage(null);
+        } finally {
+            setLoading(null); // Para de mostrar o loading
         }
     };
 
@@ -114,29 +122,47 @@ export default function OrderApprovalPage() {
                     <div key={order.id} className="bg-white p-4 rounded-lg shadow-md">
                         <h3 className="text-xl font-semibold mb-2 text-black">Pedido #{order.id}</h3>
                         <p className="text-gray-700 mb-2"><strong>Cliente:</strong> {order.customer_name}</p>
-                        <p className="text-gray-700 mb-4"><strong>Status:</strong> {order.status}</p>
+                        <p className="text-gray-700 mb-4"><strong>Status:</strong> {order.status == 'paid' ? 'PAGO' : order.status == 'rejected' ? 'REJEITADO' : 'PENDENTE'}</p>
+
+                        {/* Exibe os números selecionados */}
+                        <p className="text-gray-700 mb-4"><strong>Números selecionados:</strong> {order.numbers.join(', ')}</p>
+
                         <div className="flex justify-between">
                             <button
                                 onClick={() => handleApprove(order.id)}
-                                className={`w-full mr-2 py-2 rounded-lg text-white ${
-                                    order.status === 'paid'
+                                className={`w-full mr-2 py-2 rounded-lg text-white flex justify-center items-center ${
+                                    order.status === 'paid' || loading === order.id
                                         ? 'bg-gray-400 cursor-not-allowed'
                                         : 'bg-green-500 hover:bg-green-600'
                                 }`}
-                                disabled={order.status === 'approved'}
+                                disabled={order.status === 'paid' || loading === order.id}
                             >
-                                Aprovar
+                                {loading === order.id ? (
+                                    <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                ) : (
+                                    'Aprovar'
+                                )}
                             </button>
                             <button
                                 onClick={() => handleReject(order.id)}
-                                className={`w-full py-2 rounded-lg text-white ${
-                                    order.status === 'rejected'
+                                className={`w-full py-2 rounded-lg text-white flex justify-center items-center ${
+                                    order.status === 'rejected' || loading === order.id
                                         ? 'bg-gray-400 cursor-not-allowed'
                                         : 'bg-red-500 hover:bg-red-600'
                                 }`}
-                                disabled={order.status === 'rejected'}
+                                disabled={order.status === 'rejected' || loading === order.id}
                             >
-                                Rejeitar
+                                {loading === order.id ? (
+                                    <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                    </svg>
+                                ) : (
+                                    'Rejeitar'
+                                )}
                             </button>
                         </div>
                     </div>
