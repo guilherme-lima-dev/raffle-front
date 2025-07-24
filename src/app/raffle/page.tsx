@@ -35,8 +35,8 @@ export default function RafflePage() {
     const [isScrolled, setIsScrolled] = useState<boolean>(false);
     const [orderId, setOrderId] = useState<string | null>(null);
     const [randomSelectionCount, setRandomSelectionCount] = useState<number>(0);
-    const [availableSlots, setAvailableSlots] = useState<number>(0); // Armazena a quantidade de cotas disponíveis
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Estado de carregamento do botão de comprar
+    const [availableSlots, setAvailableSlots] = useState<number>(0);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchRaffle = async () => {
@@ -45,7 +45,6 @@ export default function RafflePage() {
                 setRaffle(response.data);
                 setLoading(false);
 
-                // Calcula as cotas disponíveis (status === "available")
                 const available = response.data.numbers.filter(num => num.status === 'available').length;
                 setAvailableSlots(available);
 
@@ -60,11 +59,7 @@ export default function RafflePage() {
 
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 300) {
-                setIsScrolled(true);
-            } else {
-                setIsScrolled(false);
-            }
+            setIsScrolled(window.scrollY > 300);
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -135,81 +130,168 @@ export default function RafflePage() {
         });
     };
 
+    const calculateProgress = () => {
+        if (!raffle) return 0;
+        const soldNumbers = raffle.numbers.filter(num => num.status !== 'available').length;
+        return (soldNumbers / raffle.total_numbers) * 100;
+    };
+
     if (loading) {
-        return <div className="text-center">Carregando...</div>;
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600 text-lg">Carregando rifa...</p>
+                </div>
+            </div>
+        );
     }
 
     if (error) {
-        return <div className="text-center text-red-500">{error}</div>;
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center">
+                <div className="text-center bg-white p-8 rounded-2xl shadow-xl">
+                    <div className="text-6xl mb-4">😔</div>
+                    <p className="text-red-600 text-lg font-semibold">{error}</p>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="min-h-screen bg-blue-50 py-10">
-            <div className="container mx-auto px-4">
-                <div className="bg-white shadow-lg rounded-lg p-8">
-                    <h1 className="text-4xl font-bold text-blue-800 mb-4">{raffle?.name} <span className="text-2xl underline">(<Link href="/ranking">Ranking de compradores</Link>)</span></h1>
-                    <p className="text-gray-600 mb-2">{raffle?.description}</p>
-                    <p className="text-blue-800 font-semibold mb-4">Preço por número: R$ {raffle?.price}</p>
-                    <p className="text-blue-800 font-semibold mb-4">Quantidade de números: {raffle?.total_numbers}</p>
-                    <p className="text-blue-800 font-semibold mb-4">Premiação: R$ 500</p>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+            {/* Header Hero Section */}
+            <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+                <div className="container mx-auto px-4 py-12">
+                    <div className="text-center">
+                        <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-white">
+                            {raffle?.name}
+                        </h1>
+                        <p className="text-xl md:text-2xl mb-6 text-indigo-100">{raffle?.description}</p>
 
-                    {/* Mostra a quantidade de cotas disponíveis */}
-                    <p className="text-blue-800 font-semibold mb-4">Números disponíveis: {availableSlots}</p>
+                        <div className="flex flex-wrap justify-center gap-6 mb-8">
+                            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 min-w-[200px]">
+                                <div className="text-3xl font-bold text-yellow-300">R$ {raffle?.price}</div>
+                                <div className="text-sm text-indigo-200">por número</div>
+                            </div>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 min-w-[200px]">
+                                <div className="text-3xl font-bold text-green-300">R$ 500</div>
+                                <div className="text-sm text-indigo-200">premiação</div>
+                            </div>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 min-w-[200px]">
+                                <div className="text-3xl font-bold text-blue-300">{availableSlots}</div>
+                                <div className="text-sm text-indigo-200">números disponíveis</div>
+                            </div>
+                        </div>
 
-                    <p className="mt-4 mb-2 text-black cursor-pointer" onClick={handleCopyPix}>
-                        Chave PIX (Telefone): <b className="underline">61993248349</b>
-                    </p>
-                    {pixMessage && <p className="text-green-500">{pixMessage}</p>}
+                        {/* Progress Bar */}
+                        <div className="max-w-md mx-auto">
+                            <div className="flex justify-between text-sm mb-2">
+                                <span>Progresso da rifa</span>
+                                <span>{Math.round(calculateProgress())}%</span>
+                            </div>
+                            <div className="w-full bg-white/30 rounded-full h-3">
+                                <div
+                                    className="bg-gradient-to-r from-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-500"
+                                    style={{ width: `${calculateProgress()}%` }}
+                                ></div>
+                            </div>
+                        </div>
 
-                    <div className="my-4">
-                        <label className="block text-blue-800 font-semibold mb-2">Seleção Aleatória (Digite a quantidade de numeros):</label>
+                        <Link href="/ranking" className="inline-flex items-center mt-6 px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-all duration-300">
+                            <span className="mr-2">🏆</span>
+                            Ver Ranking de Compradores
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            <div className="container mx-auto px-4 py-8">
+                {/* PIX Section */}
+                <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center justify-center">
+                            <span className="mr-3 text-3xl">🔑</span>
+                            Chave PIX
+                        </h2>
+                        <div
+                            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-2xl cursor-pointer hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 inline-block"
+                            onClick={handleCopyPix}
+                        >
+                            <div className="text-xl font-bold">61993248349</div>
+                            <div className="text-sm opacity-90">Clique para copiar</div>
+                        </div>
+                        {pixMessage && (
+                            <div className="mt-4 p-3 bg-green-100 text-green-800 rounded-xl border border-green-200 animate-fade-in">
+                                ✅ {pixMessage}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Random Selection */}
+                <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span className="mr-3 text-3xl">🎲</span>
+                        Seleção Aleatória
+                    </h2>
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
                         <input
                             type="number"
-                            placeholder="Quantidade de números"
-                            value={randomSelectionCount}
+                            placeholder="Quantos números?"
+                            value={randomSelectionCount || ''}
                             onChange={(e) => setRandomSelectionCount(Number(e.target.value))}
-                            className="w-full px-3 py-2 mb-4 border rounded-md text-black max-w-sm mr-2"
+                            className="flex-1 px-6 py-4 border-2 border-gray-200 rounded-2xl text-gray-800 focus:border-indigo-500 focus:outline-none transition-colors"
+                            max={availableSlots}
                         />
                         <button
                             onClick={handleRandomSelection}
                             disabled={randomSelectionCount <= 0 || randomSelectionCount > availableSlots}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                            className="px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-2xl font-semibold hover:from-purple-600 hover:to-indigo-600 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
                         >
-                            Selecionar Números Aleatórios
+                            🎯 Sortear Números
                         </button>
                     </div>
+                </div>
 
-                    <div className="mt-6 mb-6">
-                        <p className="text-blue-800 font-semibold">Números selecionados: {selectedNumbers.join(', ') || 'Nenhum'}</p>
-                    </div>
-
-                    <div className="row-auto flex items-center justify-center">
-                        <div className={`${isScrolled ? 'fixed bottom-4 left-1/2 transform -translate-x-1/2 w-96 max-w-md px-4' : 'w-96 text-center my-6 max-w-md px-4'}`}>
-                            <button
-                                onClick={() => setShowModal(true)}
-                                disabled={selectedNumbers.length === 0 || isSubmitting}
-                                className={`w-full py-4 rounded-full text-white font-semibold transition duration-200 shadow-lg
-                                    ${selectedNumbers.length === 0 || isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}
-                                `}
-                            >
-                                {isSubmitting ? (
-                                    <svg className="animate-spin h-5 w-5 mx-auto text-white" viewBox="0 0 24 24">
-                                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                    </svg>
-                                ) : (
-                                    'Comprar'
-                                )}
-                            </button>
+                {/* Selected Numbers */}
+                {selectedNumbers.length > 0 && (
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl shadow-xl p-8 mb-8 border border-green-200">
+                        <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center">
+                            <span className="mr-3 text-2xl">✅</span>
+                            Números Selecionados ({selectedNumbers.length})
+                        </h3>
+                        <div className="flex flex-wrap gap-3">
+                            {selectedNumbers.sort((a, b) => a - b).map((num) => (
+                                <span key={num} className="bg-green-500 text-white px-4 py-2 rounded-full font-bold text-lg shadow-lg">
+                                    {num}
+                                </span>
+                            ))}
+                        </div>
+                        <div className="mt-4 text-green-700 font-semibold">
+                            💰 Total: R$ {(selectedNumbers.length * parseFloat(raffle?.price || '0')).toFixed(2)}
                         </div>
                     </div>
+                )}
 
-                    <div className="grid grid-cols-5 gap-4 mb-32">
+                {/* Numbers Grid */}
+                <div className="bg-white rounded-3xl shadow-2xl p-8 mb-32 border border-gray-100">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span className="mr-3 text-3xl">🎟️</span>
+                        Escolha seus números
+                    </h2>
+                    <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-3">
                         {raffle?.numbers.map((num) => (
                             <div
                                 key={num.external_id}
-                                className={`flex items-center justify-center w-12 h-12 rounded-full cursor-pointer
-                                    ${num.status === 'available' ? (selectedNumbers.includes(num.number) ? 'bg-green-500 text-white' : 'bg-green-200 hover:bg-green-300') : 'bg-gray-400 cursor-not-allowed'}
+                                className={`
+                                    aspect-square flex items-center justify-center rounded-2xl cursor-pointer font-bold text-sm transition-all duration-300 transform hover:scale-110 shadow-lg
+                                    ${num.status === 'available'
+                                    ? selectedNumbers.includes(num.number)
+                                        ? 'bg-gradient-to-br from-green-400 to-green-600 text-white ring-4 ring-green-300 ring-opacity-50 scale-110'
+                                        : 'bg-gradient-to-br from-blue-400 to-indigo-500 text-white hover:from-blue-500 hover:to-indigo-600'
+                                    : 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-600 cursor-not-allowed opacity-60'
+                                }
                                 `}
                                 onClick={() => num.status === 'available' && handleSelectNumber(num.number)}
                             >
@@ -217,77 +299,155 @@ export default function RafflePage() {
                             </div>
                         ))}
                     </div>
+                </div>
 
-                    {showModal && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                            <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-                                <h2 className="text-xl font-semibold mb-4 text-black">Confirme seu Pedido</h2>
-                                <p className="mt-6 mb-2 text-black cursor-pointer" onClick={handleCopyPix}>
-                                    Chave PIX (Telefone): <b className="underline">61993248349</b>
-                                </p>
-                                {pixMessage && <p className="text-green-500">{pixMessage}</p>}
-                                <p className="mb-2 text-black">Números selecionados: {selectedNumbers.join(', ')}</p>
-                                <input
-                                    type="text"
-                                    placeholder="Nome"
-                                    value={customerName}
-                                    onChange={(e) => setCustomerName(e.target.value)}
-                                    className="w-full px-3 py-2 mb-4 border rounded-md text-black"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Telefone (opcional)"
-                                    value={customerPhone}
-                                    onChange={(e) => setCustomerPhone(e.target.value)}
-                                    className="w-full px-3 py-2 mb-4 border rounded-md text-black"
-                                />
-                                <div className="flex justify-between">
+                {/* Floating Buy Button */}
+                <div className={`${isScrolled ? 'fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50' : 'flex justify-center'}`}>
+                    <button
+                        onClick={() => setShowModal(true)}
+                        disabled={selectedNumbers.length === 0 || isSubmitting}
+                        className={`
+                            px-12 py-6 rounded-full text-white font-bold text-xl transition-all duration-300 shadow-2xl
+                            ${selectedNumbers.length === 0 || isSubmitting
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 transform hover:scale-105'
+                        }
+                            ${isScrolled ? 'animate-bounce' : ''}
+                        `}
+                    >
+                        {isSubmitting ? (
+                            <div className="flex items-center">
+                                <svg className="animate-spin h-6 w-6 mr-3" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                Processando...
+                            </div>
+                        ) : (
+                            <>
+                                🛒 Comprar ({selectedNumbers.length} números)
+                            </>
+                        )}
+                    </button>
+                </div>
+
+                {/* Modal de Confirmação */}
+                {showModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                            <div className="p-8">
+                                <div className="text-center mb-6">
+                                    <div className="text-6xl mb-4">🎟️</div>
+                                    <h2 className="text-2xl font-bold text-gray-800">Confirme seu Pedido</h2>
+                                </div>
+
+                                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 mb-6">
+                                    <div className="text-center">
+                                        <p className="text-gray-600 mb-2">Chave PIX</p>
+                                        <div
+                                            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-xl cursor-pointer hover:from-green-600 hover:to-emerald-600 transition-all duration-300 inline-block"
+                                            onClick={handleCopyPix}
+                                        >
+                                            <span className="font-bold">61993248349</span>
+                                        </div>
+                                        {pixMessage && (
+                                            <p className="text-green-600 mt-2 text-sm">✅ {pixMessage}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="bg-blue-50 rounded-2xl p-4 mb-6">
+                                    <p className="text-gray-700 font-semibold mb-2">Números selecionados:</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedNumbers.sort((a, b) => a - b).map((num) => (
+                                            <span key={num} className="bg-blue-500 text-white px-3 py-1 rounded-full font-bold">
+                                                {num}
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <p className="text-green-600 font-bold mt-3 text-lg">
+                                        💰 Total: R$ {(selectedNumbers.length * parseFloat(raffle?.price || '0')).toFixed(2)}
+                                    </p>
+                                </div>
+
+                                <div className="space-y-4 mb-8">
+                                    <input
+                                        type="text"
+                                        placeholder="Seu nome completo"
+                                        value={customerName}
+                                        onChange={(e) => setCustomerName(e.target.value)}
+                                        className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-gray-800 focus:border-indigo-500 focus:outline-none transition-colors"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Telefone (opcional)"
+                                        value={customerPhone}
+                                        onChange={(e) => setCustomerPhone(e.target.value)}
+                                        className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-gray-800 focus:border-indigo-500 focus:outline-none transition-colors"
+                                    />
+                                </div>
+
+                                <div className="flex gap-4">
                                     <button
                                         onClick={() => setShowModal(false)}
-                                        className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                                        className="flex-1 px-6 py-4 bg-gray-200 text-gray-700 rounded-2xl font-semibold hover:bg-gray-300 transition-colors"
                                     >
                                         Cancelar
                                     </button>
                                     <button
                                         onClick={handleConfirmOrder}
-                                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || !customerName.trim()}
+                                        className="flex-1 px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl font-semibold hover:from-green-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300"
                                     >
                                         {isSubmitting ? (
-                                            <svg className="animate-spin h-5 w-5 mx-auto text-white" viewBox="0 0 24 24">
-                                                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                            </svg>
+                                            <div className="flex items-center justify-center">
+                                                <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                                                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                                </svg>
+                                                Confirmando...
+                                            </div>
                                         ) : (
-                                            'Confirmar'
+                                            '✅ Confirmar Pedido'
                                         )}
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    {showSuccessModal && (
-                        <div
-                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-                            onClick={handleCloseSuccessModal}
-                        >
-                            <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-                                <h2 className="text-2xl font-semibold text-green-500 mb-4">Pedido Confirmado!</h2>
-                                <div className="text-6xl mb-4">🎉</div>
-                                <p className="text-gray-800 font-semibold">Seu pedido foi registrado com sucesso!</p>
-                                <p className="text-gray-600 mb-6">Agora, envie o comprovante para confirmar sua compra.</p>
-                                <button
-                                    onClick={handleCloseSuccessModal}
-                                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                                >
-                                    Fechar
-                                </button>
-                            </div>
+                {/* Modal de Sucesso */}
+                {showSuccessModal && (
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                        onClick={handleCloseSuccessModal}
+                    >
+                        <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full text-center p-8">
+                            <div className="animate-bounce text-8xl mb-6">🎉</div>
+                            <h2 className="text-3xl font-bold text-green-600 mb-4">Pedido Confirmado!</h2>
+                            <p className="text-gray-700 font-semibold text-lg mb-2">Seu pedido foi registrado com sucesso!</p>
+                            <p className="text-gray-600 mb-8">Agora envie o comprovante via WhatsApp para confirmar sua compra.</p>
+                            <button
+                                onClick={handleCloseSuccessModal}
+                                className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105"
+                            >
+                                📱 Enviar Comprovante
+                            </button>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
+
+            <style jsx>{`
+                @keyframes fade-in {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-in {
+                    animation: fade-in 0.3s ease-out;
+                }
+            `}</style>
         </div>
     );
 }
