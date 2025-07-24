@@ -248,7 +248,6 @@ export default function RafflePage() {
             <div className="container mx-auto px-4 py-12">
                 {/* Wedding Gift List Section */}
                 <div className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-rose-100 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 text-8xl text-rose-50 opacity-50">🎁</div>
                     <div className="relative z-10">
                         <div className="text-center mb-8">
                             <h2 className="text-3xl font-light text-slate-700 mb-4 font-serif">Lista de Presentes</h2>
@@ -281,7 +280,6 @@ export default function RafflePage() {
 
                 {/* PIX Section */}
                 <div className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-rose-100 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 text-8xl text-green-50 opacity-50">💳</div>
                     <div className="relative z-10 text-center">
                         <h2 className="text-2xl font-light text-slate-700 mb-6 font-serif flex items-center justify-center">
                             <span className="mr-3 text-green-500">🔑</span>
@@ -304,7 +302,6 @@ export default function RafflePage() {
 
                 {/* Random Selection */}
                 <div className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-rose-100 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 text-8xl text-purple-50 opacity-50">🎲</div>
                     <div className="relative z-10">
                         <h2 className="text-2xl font-light text-slate-700 mb-6 font-serif flex items-center">
                             <span className="mr-3 text-purple-500">🎲</span>
@@ -333,7 +330,6 @@ export default function RafflePage() {
                 {/* Selected Numbers */}
                 {selectedNumbers.length > 0 && (
                     <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-3xl shadow-xl p-8 mb-8 border border-rose-200 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 text-8xl text-rose-100 opacity-50">💕</div>
                         <div className="relative z-10">
                             <h3 className="text-xl font-light text-rose-700 mb-6 font-serif flex items-center">
                                 <span className="mr-3 text-2xl">✨</span>
@@ -355,7 +351,6 @@ export default function RafflePage() {
 
                 {/* Numbers Grid */}
                 <div className="bg-white rounded-3xl shadow-xl p-8 mb-32 border border-rose-100 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 text-8xl text-blue-50 opacity-50">🎟️</div>
                     <div className="relative z-10">
                         <h2 className="text-2xl font-light text-slate-700 mb-6 font-serif flex items-center">
                             <span className="mr-3 text-blue-500">🎟️</span>
