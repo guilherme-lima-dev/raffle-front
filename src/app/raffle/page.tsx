@@ -41,7 +41,7 @@ export default function RafflePage() {
     useEffect(() => {
         const fetchRaffle = async () => {
             try {
-                const response = await axios.get<Raffle>('https://raffle.glima.dev/raffles/acff1926-703a-11ef-adb4-028b968b3f3d');
+                const response = await axios.get<Raffle>('https://raffle.glima.dev/raffles/821b2585-68c3-11f0-9bdd-028d44224fc7');
                 setRaffle(response.data);
                 setLoading(false);
 
