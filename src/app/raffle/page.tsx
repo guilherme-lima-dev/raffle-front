@@ -550,7 +550,7 @@ export default function RafflePage() {
                                 {/* Blessing message */}
                                 <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-xl p-4 mb-8 border border-blue-200">
                                     <p className="text-slate-600 italic font-light">
-                                        "Que Deus abençoe você e sua família! 🙏✨"
+                                        &quot;Que Deus abençoe você e sua família! 🙏✨&ldquo;
                                     </p>
                                     <p className="text-sm text-slate-500 mt-2">
                                         - Larissa & Guilherme
@@ -603,8 +603,8 @@ export default function RafflePage() {
                     <div className="max-w-2xl mx-auto">
                         <h3 className="text-2xl font-light font-serif mb-4">Larissa & Guilherme</h3>
                         <p className="text-blue-100 mb-6 font-light leading-relaxed">
-                            "O amor é paciente, o amor é bondoso... e hoje celebramos o início de uma nova jornada juntos.
-                            Obrigada por fazerem parte deste momento tão especial em nossas vidas!"
+                            &quot;O amor é paciente, o amor é bondoso... e hoje celebramos o início de uma nova jornada juntos.
+                            Obrigada por fazerem parte deste momento tão especial em nossas vidas!&ldquo;
                         </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-lg mx-auto">
