@@ -41,7 +41,7 @@ export default function RafflePage() {
     useEffect(() => {
         const fetchRaffle = async () => {
             try {
-                const response = await axios.get<Raffle>('https://raffle.popingressos.com.br/raffles/acff1926-703a-11ef-adb4-028b968b3f3d');
+                const response = await axios.get<Raffle>('https://raffle.glima.dev/raffles/acff1926-703a-11ef-adb4-028b968b3f3d');
                 setRaffle(response.data);
                 setLoading(false);
 
@@ -96,7 +96,7 @@ export default function RafflePage() {
     const handleConfirmOrder = async () => {
         setIsSubmitting(true);
         try {
-            const response = await axios.post('https://raffle.popingressos.com.br/orders', {
+            const response = await axios.post('https://raffle.glima.dev/orders', {
                 customer_name: customerName,
                 customer_phone: customerPhone || 'NULL',
                 numbers: selectedNumbers,

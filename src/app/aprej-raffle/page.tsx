@@ -24,7 +24,7 @@ export default function OrderApprovalPage() {
         // Carrega todos os pedidos ao montar o componente
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('https://raffle.popingressos.com.br/orders', {
+                const response = await axios.get('https://raffle.glima.dev/orders', {
                     headers: {
                         accept: 'application/json',
                     },
@@ -53,7 +53,7 @@ export default function OrderApprovalPage() {
     const handleApprove = async (orderId: number) => {
         setLoading(orderId); // Marca o botão como "carregando"
         try {
-            await axios.get(`https://raffle.popingressos.com.br/orders/${orderId}/approve`, {
+            await axios.get(`https://raffle.glima.dev/orders/${orderId}/approve`, {
                 headers: {
                     accept: 'application/json',
                 },
@@ -78,7 +78,7 @@ export default function OrderApprovalPage() {
     const handleReject = async (orderId: number) => {
         setLoading(orderId); // Marca o botão como "carregando"
         try {
-            await axios.get(`https://raffle.popingressos.com.br/orders/${orderId}/reject`, {
+            await axios.get(`https://raffle.glima.dev/orders/${orderId}/reject`, {
                 headers: {
                     accept: 'application/json',
                 },

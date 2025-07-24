@@ -26,7 +26,7 @@ export default function RankingPage() {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get<Order[]>('https://raffle.popingressos.com.br/orders', {
+                const response = await axios.get<Order[]>('https://raffle.glima.dev/orders', {
                     headers: {
                         accept: 'application/json',
                     },
