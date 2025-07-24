@@ -115,7 +115,7 @@ export default function RafflePage() {
 
     const sendWhatsAppMessage = (orderId: string) => {
         const whatsappNumber = '5561993248349';
-        const message = `Oii Lari, gostaria de comprar os números: ${selectedNumbers.join(', ')} da rifa ${raffle?.name}. Meu número de pedido é ${orderId}.`;
+        const message = `Oii Gui e Lari, gostaria de comprar os números: ${selectedNumbers.join(', ')} da rifa ${raffle?.name}. Meu número de pedido é ${orderId}.`;
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
     };
